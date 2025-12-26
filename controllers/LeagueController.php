@@ -13,24 +13,24 @@ class LeagueController
             $league_type = $_POST['league_type'];
             $description = $_POST['descricao'];
             $creator_id = $_SESSION['user']['id'];
-            if(strlen($name) > 20){
-                SessionController::setFlashMessage('league_error', 'O nome da liga não pode ter mais de 20 caracteres');
+            if (strlen($name) > 20) {
+                SessionController::setFlashMessage('league_error', 'Il nome della lega non può superare i 20 caratteri');
                 header('Location: /leagues/create');
                 exit();
             }
-            if(strlen($name) < 3){
-                SessionController::setFlashMessage('league_error', 'O nome da liga não pode ter menos de 3 caracteres');
+            if (strlen($name) < 3) {
+                SessionController::setFlashMessage('league_error', 'Il nome della lega non può essere inferiore a 3 caratteri');
                 header('Location: /leagues/create');
                 exit();
             }
             if (empty($name) || empty($description)) {
-                SessionController::setFlashMessage('league_error', 'Os campos não podem estar vazios');
+                SessionController::setFlashMessage('league_error', 'I campi non possono essere vuoti');
                 header('Location: /leagues/create');
                 exit();
             }
 
-            if(self::checkString($name) || self::checkString($description)){
-                SessionController::setFlashMessage('league_error', 'Os campos não podem conter caracteres especiais');
+            if (self::checkString($name) || self::checkString($description)) {
+                SessionController::setFlashMessage('league_error', 'I campi non possono contenere caratteri speciali');
                 header('Location: /leagues/create');
                 exit();
             }
@@ -47,7 +47,8 @@ class LeagueController
         require_once '../views/liga/league_create.php';
     }
 
-    public static function checkString($string) {
+    public static function checkString($string)
+    {
         return preg_match('/[\'^£$%&*()}{@#~?><>,|=_+¬-]/', $string);
     }
     private static function insertLeague($name, $description, $league_type, $creator_id, $invite_code)
@@ -132,7 +133,7 @@ GROUP BY Ligas.id;'
                 $user_id = $_SESSION['user']['id'];
                 // Ensure the user is a member of the league
                 if (!self::isUserMemberOfLeague($user_id, $league_id)) {
-                    SessionController::setFlashMessage('access_error', 'Tu não és membro desta liga.');
+                    SessionController::setFlashMessage('access_error', 'Non sei membro di questa lega.');
                     header('Location: /error');
                     exit();
                 }
@@ -143,16 +144,16 @@ GROUP BY Ligas.id;'
                 $invitationSent = self::inviteToLeague($league_id, $leagueDetails['nome'], $invite_email);
 
                 if ($invitationSent) {
-                    SessionController::setFlashMessage('success', 'Convite enviado com sucesso para ' . $invite_email);
+                    SessionController::setFlashMessage('success', 'Invito inviato con successo a ' . $invite_email);
                 } else {
-                    SessionController::setFlashMessage('error', 'Ocorreu um erro ao enviar o convite. Por favor tente novamente.');
+                    SessionController::setFlashMessage('error', 'Si è verificato un errore nell\'invio dell\'invito. Riprova.');
                 }
 
                 header("Location: /league?id=$league_id");
                 exit();
             }
 
-            SessionController::setFlashMessage('error', 'Por favor insira um e-mail válido.');
+            SessionController::setFlashMessage('error', 'Inserisci un indirizzo e-mail valido.');
             header('Location: ' . $_SERVER['REQUEST_URI']);
             exit();
 
@@ -164,7 +165,7 @@ GROUP BY Ligas.id;'
                 $joinRequests = self::getLeagueJoinRequests($league_id);
                 // Ensure the league exists
                 if (!$leagueDetails) {
-                    SessionController::setFlashMessage('error', 'Liga não encontrada.');
+                    SessionController::setFlashMessage('error', 'Lega non trovata.');
                     header('Location: /error');
                     exit();
                 }
@@ -173,7 +174,7 @@ GROUP BY Ligas.id;'
                 $isVisitor = false;
                 // Verify if user is a member of the league
                 if (!$isLeagueMember && $leagueDetails['tipo_liga'] == 'privada') {
-                    SessionController::setFlashMessage('access_error', 'Tu não és membro desta liga/Liga privada.');
+                    SessionController::setFlashMessage('access_error', 'Non sei membro di questa lega/Lega privata.');
                     header('Location: /error');
                     exit();
                 }
@@ -195,10 +196,10 @@ GROUP BY Ligas.id;'
                     foreach ($gamesResults as $game) {
                         if ($game['equipa_jogador'] == 1) {
                             // if player was in team 1
-                            $last3Results[] = $game['score_equipa1'] > $game['score_equipa2'] ? 'V' : 'D';
+                            $last3Results[] = $game['score_equipa1'] > $game['score_equipa2'] ? 'V' : 'S';
                         } else {
                             // if player was in team 2
-                            $last3Results[] = $game['score_equipa2'] > $game['score_equipa1'] ? 'V' : 'D';
+                            $last3Results[] = $game['score_equipa2'] > $game['score_equipa1'] ? 'V' : 'S';
                         }
                     }
 
@@ -225,14 +226,14 @@ GROUP BY Ligas.id;'
                 unset($rank);
 
                 if ($leagueDetails['tipo_liga'] == 'publica') {
-                    $leagueDetails['tipo'] = 'Pública';
+                    $leagueDetails['tipo'] = 'Pubblica';
                 } else {
-                    $leagueDetails['tipo'] = 'Privada';
+                    $leagueDetails['tipo'] = 'Privata';
                 }
 
                 require_once '../views/liga/league.php';
             } else {
-                SessionController::setFlashMessage('error', 'Endereço Inválido');
+                SessionController::setFlashMessage('error', 'Indirizzo non valido.');
                 header('Location: /error');
             }
         }
@@ -264,7 +265,7 @@ GROUP BY Ligas.id;'
 
         // Bind value only if provided
         if ($numberOfGames !== null) {
-            $stmt->bindValue(':numberOfGames', (int)$numberOfGames, PDO::PARAM_INT);
+            $stmt->bindValue(':numberOfGames', (int) $numberOfGames, PDO::PARAM_INT);
         }
 
         $stmt->execute();
@@ -324,7 +325,8 @@ GROUP BY Ligas.id;'
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public static function getLeagueMemberLastGamesResults($league_id, $player_id){
+    public static function getLeagueMemberLastGamesResults($league_id, $player_id)
+    {
         $conn = dbConnect();
         $stmt = $conn->prepare('SELECT
             j.id AS jogo_id,
@@ -435,7 +437,7 @@ ORDER BY total_pontuacao DESC');
 
             // Check if invite code is given
             if (!$invite_code) {
-                SessionController::setFlashMessage('league_join_error', 'Código de convite ausente');
+                SessionController::setFlashMessage('league_join_error', 'Codice di invito mancante');
                 header('Location: /league/join');
                 exit();
             }
@@ -444,14 +446,14 @@ ORDER BY total_pontuacao DESC');
 
             // Check if invite code is valid
             if (!$league_id) {
-                SessionController::setFlashMessage('league_join_error', 'Código de convite inválido');
+                SessionController::setFlashMessage('league_join_error', 'Codice di invito non valido');
                 header('Location: /league/join');
                 exit();
             }
 
             // Check if user is already in the league
             if (self::isUserInLeague($user_id, $league_id)) {
-                SessionController::setFlashMessage('league_join_error', 'Já estás inscrito nessa liga');
+                SessionController::setFlashMessage('league_join_error', 'Sei già iscritto a questa lega');
                 header('Location: /league/join');
                 exit();
             }
@@ -520,7 +522,7 @@ ORDER BY total_pontuacao DESC');
 
             // Verify if user is a member of the league
             if (!self::isUserMemberOfLeague($user_id, $league_id)) {
-                SessionController::setFlashMessage('access_error', 'Tu não és membro desta liga.');
+                SessionController::setFlashMessage('access_error', 'Non sei membro di questa lega.');
                 header('Location: /error');
                 exit();
             }
@@ -536,7 +538,7 @@ ORDER BY total_pontuacao DESC');
                 $newLeagueDescription = $_POST['description'];
                 $newLeagueType = $_POST['tipo_liga'];
                 if (empty($newLeagueDescription) || empty($newLeagueName)) {
-                    SessionController::setFlashMessage('error', 'Não pode ficar vazio.');
+                    SessionController::setFlashMessage('error', 'Non può essere vuoto.');
                     header('Location: ' . $_SERVER['REQUEST_URI']);
                     exit;
                 }
@@ -545,11 +547,11 @@ ORDER BY total_pontuacao DESC');
                 $descriptionUpdateStatus = self::updateLeagueDescription($league_id, $newLeagueDescription);
 
                 if ($nameUpdateStatus && $descriptionUpdateStatus && $typeUpdateStatus) {
-                    SessionController::setFlashMessage('league_settings_success', 'Informação da liga atualizada com sucesso.');
+                    SessionController::setFlashMessage('league_settings_success', 'Informazioni della lega aggiornate con successo.');
                     header('Location: /league?id=' . $league_id);
                     exit();
                 } else {
-                    SessionController::setFlashMessage('error', 'Erro ao atualizar a informação da liga.');
+                    SessionController::setFlashMessage('error', 'Errore durante l\'aggiornamento delle informazioni della lega.');
                 }
             }
         }
@@ -591,7 +593,7 @@ ORDER BY total_pontuacao DESC');
             // Verify if user is the creator of the league
             $leagueDetails = self::getLeagueInfo($league_id);
             if ($user_id != $leagueDetails['id_criador']) {
-                SessionController::setFlashMessage('access_error', 'Não és administrador desta liga.');
+                SessionController::setFlashMessage('access_error', 'Non sei amministratore di questa lega.');
                 header('Location: /error');
                 exit;
             }
@@ -603,11 +605,11 @@ ORDER BY total_pontuacao DESC');
 
             if (UserController::verifyPassword($user_id, $password)) {
                 self::deleteLeague($league_id);
-                SessionController::setFlashMessage('success', 'A liga foi eliminada com sucesso.');
+                SessionController::setFlashMessage('success', 'La lega è stata eliminata con successo.');
                 header('Location: /dashboard');
                 exit;
             } else {
-                SessionController::setFlashMessage('error', 'A palavra-passe está errada.');
+                SessionController::setFlashMessage('error', 'La password è errata.');
                 require_once '../views/liga/confirm_delete.php';
             }
         } else {
@@ -646,13 +648,13 @@ ORDER BY total_pontuacao DESC');
     {
         $leagueDetails = self::getLeagueInfo($league_id);
         if (!isset($leagueDetails['id_criador'])) {
-            SessionController::setFlashMessage('access_error', 'Liga inválida.');
+            SessionController::setFlashMessage('access_error', 'Lega non valida.');
             header('Location: /error');
             exit;
         }
 
         if ($user_id != $leagueDetails['id_criador']) {
-            SessionController::setFlashMessage('access_error', 'Não és administrador desta liga.');
+            SessionController::setFlashMessage('access_error', 'Non sei amministratore di questa lega.');
             header('Location: /error');
             exit;
         }
@@ -684,7 +686,7 @@ ORDER BY total_pontuacao DESC');
     {
         // Check if the invitation code is provided
         if (!isset($_GET['code'])) {
-            SessionController::setFlashMessage('error', 'Código de convite inválido.');
+            SessionController::setFlashMessage('error', 'Codice di invito non valido.');
             header('Location: /error');
             exit();
         }
@@ -705,10 +707,10 @@ ORDER BY total_pontuacao DESC');
         if (self::processInvitation($userId, $inviteCode)) {
             // If the invitation is processed successfully, remove the invite code from the session
             unset($_SESSION['invite_code']);
-            SessionController::setFlashMessage('success', 'Convite aceite com sucesso!');
+            SessionController::setFlashMessage('success', 'Invito accettato con successo!');
             header('Location: /dashboard');
         } else {
-            SessionController::setFlashMessage('error', 'Falha ao aceitar o convite.');
+            SessionController::setFlashMessage('error', 'Impossibile accettare l\'invito.');
             header('Location: /error');
         }
     }
@@ -810,28 +812,28 @@ ORDER BY total_pontuacao DESC');
 
             // Check if the league exists
             if (!$leagueData) {
-                SessionController::setFlashMessage('error', 'Liga não encontrada.');
+                SessionController::setFlashMessage('error', 'Lega non trovata.');
                 header('Location: /error');
                 exit();
             }
 
             // Check if the league is public
             if ($leagueData['tipo_liga'] != 'publica') {
-                SessionController::setFlashMessage('error', 'Não podes pedir para entrar numa liga privada.');
+                SessionController::setFlashMessage('error', 'Non puoi richiedere di entrare in una lega privata.');
                 header('Location: /error');
                 exit();
             }
 
             // Check if the user is already a member of the league
             if (self::isUserMemberOfLeague($leagueId, $_SESSION['user']['id'])) {
-                SessionController::setFlashMessage('error', 'Já és membro desta liga.');
+                SessionController::setFlashMessage('error', 'Sei già membro di questa lega.');
                 header('Location: /error');
                 exit();
             }
 
             // Check if the user has a pending request to join the league
             if (self::isUserPendingMemberOfLeague($leagueId, $_SESSION['user']['id'])) {
-                SessionController::setFlashMessage('error', 'Já tens um pedido pendente para entrar nesta liga.');
+                SessionController::setFlashMessage('error', 'Hai già una richiesta in sospeso per entrare in questa lega.');
                 header('Location: /error');
                 exit();
             }
@@ -847,11 +849,11 @@ ORDER BY total_pontuacao DESC');
             // need to sanitaze message here
             $stmt->bindParam(':message', $_POST['message']);
             $stmt->execute();
-            NotificationController::create($leagueAdmin, 'Tens novos pedidos de adesão', '/league?id=' . $_POST['league_id']);
-            SessionController::setFlashMessage('success', 'Pedido enviado com sucesso!');
+            NotificationController::create($leagueAdmin, 'Hai nuove richieste di adesione', '/league?id=' . $_POST['league_id']);
+            SessionController::setFlashMessage('success', 'Richiesta inviata con successo!');
             header('Location: /dashboard');
         } else {
-            SessionController::setFlashMessage('error', 'Método não suportado.');
+            SessionController::setFlashMessage('error', 'Metodo non supportato.');
             header('Location: /error');
         }
 
@@ -912,7 +914,7 @@ ORDER BY total_pontuacao DESC');
         checkLoggedIn();
 
         if ($_SERVER['REQUEST_METHOD'] != 'POST') {
-            SessionController::setFlashMessage('error', 'Método não suportado.');
+            SessionController::setFlashMessage('error', 'Metodo non supportato.');
             header('Location: /error');
             exit();
         }
@@ -921,36 +923,36 @@ ORDER BY total_pontuacao DESC');
         $userId = $_POST['user_id'];
 
         if (!self::isLeagueAdmin($leagueId, $_SESSION['user']['id'])) {
-            SessionController::setFlashMessage('error', 'Não tens permissões para aceitar pedidos de entrada nesta liga.');
+            SessionController::setFlashMessage('error', 'Non hai i permessi per accettare richieste di adesione a questa lega.');
             header('Location: /error');
             exit();
         }
 
-        if(self::isUserMemberOfLeague($userId, $leagueId)) {
-            SessionController::setFlashMessage('error', 'O utilizador já pertence à liga.');
+        if (self::isUserMemberOfLeague($userId, $leagueId)) {
+            SessionController::setFlashMessage('error', 'L\'utente appartiene già alla lega.');
             header('Location: /error');
             exit();
         }
 
         if (!self::addUserToLeague($userId, $leagueId)) {
-            SessionController::setFlashMessage('error', 'Ocorreu um erro ao adicionar o utilizador à liga.');
+            SessionController::setFlashMessage('error', 'Si è verificato un errore durante l\'aggiunta dell\'utente alla lega.');
             header('Location: /error');
             exit();
         }
 
         if (!self::addUserToRanking($userId, $leagueId)) {
-            SessionController::setFlashMessage('error', 'Ocorreu um erro ao adicionar o utilizador ao ranking.');
+            SessionController::setFlashMessage('error', 'Si è verificato un errore durante l\'aggiunta dell\'utente alla classifica.');
             header('Location: /error');
             exit();
         }
 
         if (!self::acceptFromWaitList($requestId)) {
-            SessionController::setFlashMessage('error', 'Ocorreu um erro ao aceitar o pedido.');
+            SessionController::setFlashMessage('error', 'Si è verificato un errore nell\'accettare la richiesta.');
             header('Location: /error');
             exit();
         }
 
-        NotificationController::create($userId, 'O teu pedido de adesão foi aceite', '/league?id=' . $leagueId);
+        NotificationController::create($userId, 'La tua richiesta di adesione è stata accettata', '/league?id=' . $leagueId);
         header("Location: /league?id=$leagueId");
 
     }
@@ -986,7 +988,7 @@ ORDER BY total_pontuacao DESC');
         checkLoggedIn();
 
         if ($_SERVER['REQUEST_METHOD'] != 'POST') {
-            SessionController::setFlashMessage('error', 'Método não suportado.');
+            SessionController::setFlashMessage('error', 'Metodo non supportato.');
             header('Location: /error');
             exit();
         }
@@ -994,13 +996,13 @@ ORDER BY total_pontuacao DESC');
         $leagueId = $_POST['league_id'];
 
         if (!self::isLeagueAdmin($leagueId, $_SESSION['user']['id'])) {
-            SessionController::setFlashMessage('error', 'Não tens permissões para rejeitar pedidos de entrada nesta liga.');
+            SessionController::setFlashMessage('error', 'Non hai i permessi per rifiutare richieste di adesione a questa lega.');
             header('Location: /error');
             exit();
         }
 
         if (!self::deleteFromWaitList($requestId)) {
-            SessionController::setFlashMessage('error', 'Ocorreu um erro ao rejeitar o pedido.');
+            SessionController::setFlashMessage('error', 'Si è verificato un errore nel rifiutare la richiesta.');
             header('Location: /error');
             exit();
         }
@@ -1009,12 +1011,13 @@ ORDER BY total_pontuacao DESC');
     }
 
 
-    public static function leaveLeague(){
+    public static function leaveLeague()
+    {
         SessionController::start();
         checkLoggedIn();
 
         if ($_SERVER['REQUEST_METHOD'] != 'POST') {
-            SessionController::setFlashMessage('error', 'Método não suportado.');
+            SessionController::setFlashMessage('error', 'Metodo non supportato.');
             header('Location: /error');
             exit();
         }
@@ -1024,31 +1027,31 @@ ORDER BY total_pontuacao DESC');
         $userInfo = UserController::getUserData($userId);
 
         if (!self::isUserMemberOfLeague($userId, $leagueId)) {
-            SessionController::setFlashMessage('error', 'Não pertences a esta liga.');
+            SessionController::setFlashMessage('error', 'Non appartieni a questa lega.');
             header('Location: /error');
             exit();
         }
 
         if (!self::removeUserFromLeague($userId, $leagueId)) {
-            SessionController::setFlashMessage('error', 'Ocorreu um erro ao sair da liga.');
+            SessionController::setFlashMessage('error', 'Si è verificato un errore durante l\'uscita dalla lega.');
             header('Location: /error');
             exit();
         }
 
         if (!self::removeUserFromRanking($userId, $leagueId)) {
-            SessionController::setFlashMessage('error', 'Ocorreu um erro ao sair do ranking.');
+            SessionController::setFlashMessage('error', 'Si è verificato un errore durante la rimozione dalla classifica.');
             header('Location: /error');
             exit();
         }
 
-        if(!GameController::removePlayerFromGames($userId, $leagueId)){
-            SessionController::setFlashMessage('error', 'Ocorreu um erro ao sair dos jogos.');
+        if (!GameController::removePlayerFromGames($userId, $leagueId)) {
+            SessionController::setFlashMessage('error', 'Si è verificato un errore durante l\'uscita dalle partite.');
             header('Location: /error');
             exit();
         }
 
-        NotificationController::create($leagueAdmin, $userInfo['nome_utilizador'] . ' saiu da liga', '/league?id=' . $leagueId);
-        SessionController::setFlashMessage('success', 'Saiu da liga com sucesso.');
+        NotificationController::create($leagueAdmin, $userInfo['nome_utilizador'] . ' ha lasciato la lega', '/league?id=' . $leagueId);
+        SessionController::setFlashMessage('success', 'Hai lasciato la lega con successo.');
         header("Location: /dashboard");
     }
 

@@ -4,7 +4,7 @@ class UserController
 {
     public static function register()
     {
-        if(isLoggedIn()) {
+        if (isLoggedIn()) {
             header('Location: /dashboard');
             exit;
         }
@@ -28,28 +28,28 @@ class UserController
             $_SESSION['old']['email'] = $email;
 
             if (empty($username)) {
-                SessionController::setFlashMessage('username', "Nome de usuário é obrigatório.");
-            } else if(strlen($username) < 3) {
-                SessionController::setFlashMessage('username', "Nome de usuário deve ter pelo menos 3 caracteres.");
+                SessionController::setFlashMessage('username', "Il nome utente è obbligatorio.");
+            } else if (strlen($username) < 3) {
+                SessionController::setFlashMessage('username', "Il nome utente deve avere almeno 3 caratteri.");
             } else {
                 $userExists = self::checkUserExists($username);
-                if($userExists) {
-                    SessionController::setFlashMessage('username', "Nome de usuário já está em uso.");
+                if ($userExists) {
+                    SessionController::setFlashMessage('username', "Il nome utente è già in uso.");
                 }
             }
-            if(empty($email)){
-                SessionController::setFlashMessage('email', "E-mail é obrigatorio");
-            }else {
+            if (empty($email)) {
+                SessionController::setFlashMessage('email', "L'e-mail è obbligatoria");
+            } else {
                 $emailExists = self::checkEmailExists($email);
-                if($emailExists){
-                    SessionController::setFlashMessage('email', "E-mail já está em uso.");
+                if ($emailExists) {
+                    SessionController::setFlashMessage('email', "L'e-mail è già in uso.");
                 }
             }
 
-            if(empty($password)) {
-                SessionController::setFlashMessage('password', "Senha é obrigatória.");
-            }elseif ($password != $confirmPassword){
-                SessionController::setFlashMessage('password', 'As senhas não são iguais.');
+            if (empty($password)) {
+                SessionController::setFlashMessage('password', "La password è obbligatoria.");
+            } elseif ($password != $confirmPassword) {
+                SessionController::setFlashMessage('password', 'Le password non coincidono.');
             }
 
             list($avatarDestination, $avatarErrors) = self::handleAvatarUpload($avatar);
@@ -83,8 +83,14 @@ class UserController
                     'avatar' => $avatarDestination,
                 ];
 
-                $mailer = new MailerController();
-                $mailer->sendWelcomeEmail($email, $username);
+                // Try to send welcome email, but don't fail registration if it doesn't work
+                try {
+                    $mailer = new MailerController();
+                    $mailer->sendWelcomeEmail($email, $username);
+                } catch (Exception $e) {
+                    // Log the error but continue with registration
+                    error_log("Failed to send welcome email: " . $e->getMessage());
+                }
 
                 // Check if there's an invitation code in the session
                 if (isset($_SESSION['invite_code'])) {
@@ -148,7 +154,7 @@ class UserController
             $_SESSION['user']['avatar'] = $avatarPath;
 
             // Set a success message
-            SessionController::setFlashMessage('success_avatar_message', 'O avatar foi atualizado com sucesso!');
+            SessionController::setFlashMessage('success_avatar_message', 'L\'avatar è stato aggiornato con successo!');
 
         } catch (Exception $e) {
             // Set an error message
@@ -168,7 +174,7 @@ class UserController
         // Verifique se um arquivo foi realmente enviado
         if (isset($avatar) && $avatar['error'] !== UPLOAD_ERR_NO_FILE) {
             if ($avatar['error'] !== UPLOAD_ERR_OK) {
-                $errors['avatar'] = 'Problema no upload do avatar';
+                $errors['avatar'] = 'Problema durante il caricamento dell\'avatar';
             } else {
                 $avatarName = $avatar['name'];
                 $avatarTmpName = $avatar['tmp_name'];
@@ -180,11 +186,11 @@ class UserController
                 $allowed = array('jpg', 'jpeg', 'png');
 
                 if (!in_array($avatarActualExt, $allowed)) {
-                    $errors['avatar'] = "Apenas são permitidos arquivos jpg, jpeg e png!";
+                    $errors['avatar'] = "Sono permessi solo file jpg, jpeg e png!";
                 }
 
                 if ($avatarSize > 5000000) {
-                    $errors['avatar'] = "O arquivo é demasiado grande!";
+                    $errors['avatar'] = "Il file è troppo grande!";
                 }
 
                 if (empty($errors)) {
@@ -202,7 +208,7 @@ class UserController
 
     public static function login()
     {
-        if(isLoggedIn()) {
+        if (isLoggedIn()) {
             // Check if there's an invite code in the session or GET params
             if (isset($_GET['invite_code'])) {
                 // There's an invitation code. Redirect to the accept invitation page
@@ -246,7 +252,7 @@ class UserController
                 }
 
             } else {
-                $errors['login'] = 'Nome de usuário ou senha incorretos.';
+                $errors['login'] = 'Nome utente o password non corretti.';
                 $_SESSION['errors'] = $errors;
             }
         }
@@ -265,7 +271,7 @@ class UserController
             $confirm_new_password = $_POST['confirm_new_password'];
 
             if ($new_password != $confirm_new_password) {
-                SessionController::setFlashMessage('password', 'As senhas não são iguais');
+                SessionController::setFlashMessage('password', 'Le password non coincidono');
                 header("Location: /settings");
                 exit();
             }
@@ -278,7 +284,7 @@ class UserController
             $user = $stmt->fetch();
 
             if (!password_verify($old_password, $user['password_hash'])) {
-                SessionController::setFlashMessage('password', 'A senha antiga está incorreta.');
+                SessionController::setFlashMessage('password', 'La vecchia password non è corretta.');
                 header("Location: /settings");
                 exit();
             }
@@ -290,7 +296,7 @@ class UserController
             $stmt->bindParam(':password', $newPasswordHash);
             $stmt->execute();
 
-            SessionController::setFlashMessage('success_password_message', 'Senha alterada com sucesso.');
+            SessionController::setFlashMessage('success_password_message', 'Password modificata con successo.');
             header('Location: /settings');
 
         }
@@ -302,11 +308,11 @@ class UserController
 
         checkLoggedIn();
 
-        if($_SERVER['REQUEST_METHOD'] == 'POST') {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $newMail = $_POST['email'];
 
-            if(!filter_var($newMail, FILTER_VALIDATE_EMAIL) || empty($newMail)) {
-                SessionController::setFlashMessage('email','Formato de e-mail inválido.');
+            if (!filter_var($newMail, FILTER_VALIDATE_EMAIL) || empty($newMail)) {
+                SessionController::setFlashMessage('email', 'Formato e-mail non valido.');
                 header('Location: /settings');
                 exit();
             }
@@ -318,7 +324,7 @@ class UserController
             $existingEmail = $stmt->fetch();
 
             if ($existingEmail) {
-                SessionController::setFlashMessage('email', 'Este e-mail já está em uso.');
+                SessionController::setFlashMessage('email', 'Questa e-mail è già in uso.');
                 header('Location: /settings');
                 exit();
             }
@@ -330,14 +336,15 @@ class UserController
 
             $_SESSION['user']['email'] = $newMail;
 
-            SessionController::setFlashMessage('success_mail_message', 'E-mail alterado com sucesso.');
+            SessionController::setFlashMessage('success_mail_message', 'E-mail modificata con successo.');
             header('Location: /settings');
 
         }
     }
 
 
-    public static function verifyPassword($user_id, $input_password) {
+    public static function verifyPassword($user_id, $input_password)
+    {
         $conn = dbConnect();
         $stmt = $conn->prepare('SELECT password_hash FROM Utilizadores WHERE id = :user_id');
         $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
@@ -352,9 +359,10 @@ class UserController
         return true;
     }
 
-    public  static function getDaysFromLastGame($user_id){
+    public static function getDaysFromLastGame($user_id)
+    {
         $lastGameDate = GameController::getLastUserGameDate($user_id);
-        if(!$lastGameDate){
+        if (!$lastGameDate) {
             return -1;
         }
         $lastGameDateTime = new DateTime($lastGameDate);
@@ -369,7 +377,7 @@ class UserController
         $user_id = $_SESSION['user']['id'];
         $leagues = LeagueController::getLeaguesUser($user_id);
         $user = self::getUserData($user_id);
-        $daysSinceLastGame =  self::getDaysFromLastGame($user_id);
+        $daysSinceLastGame = self::getDaysFromLastGame($user_id);
         $lastGames = GameController::getPlayerGames($user_id);
 
         require_once '../views/user/dashboard.php';
@@ -386,7 +394,7 @@ class UserController
     {
         checkLoggedIn();
 
-        if($_SERVER['REQUEST_METHOD'] == 'GET'){
+        if ($_SERVER['REQUEST_METHOD'] == 'GET') {
             $user_id = $_GET['id'];
 
             // username query
@@ -410,7 +418,7 @@ class UserController
                 if ($score['jogos_jogados'] > 0) {
                     $win_loss_ratio = ($score['jogos_ganhos'] / $score['jogos_jogados']) * 100;
                 }
-            }else{
+            } else {
                 $score = [];
                 $score['jogos_ganhos'] = 0;
                 $score['jogos_jogados'] = 0;
@@ -421,7 +429,7 @@ class UserController
             $leagues = LeagueController::getLeaguesUser($user_id);
             foreach ($leagues as $key => $league) {
                 $player_ranking = LeagueController::getPlayerRankingInLeague($league['id'], $user_id);
-                if(isset($player_ranking['rank'])) {
+                if (isset($player_ranking['rank'])) {
                     $leagues[$key]['ranking'] = $player_ranking['rank'];
                     $leagues[$key]['points'] = $player_ranking['total_pontuacao'];
                 }
@@ -432,7 +440,8 @@ class UserController
         require_once BASE_PATH . '/views/user/profile.php';
     }
 
-    public static function getUserData($user_id) {
+    public static function getUserData($user_id)
+    {
         $conn = dbConnect();
         $stmt = $conn->prepare('SELECT nome_utilizador, avatar FROM Utilizadores WHERE id = :user_id');
         $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
@@ -440,7 +449,8 @@ class UserController
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public static function getByEmail($email){
+    public static function getByEmail($email)
+    {
         $conn = dbConnect();
         $stmt = $conn->prepare('SELECT * FROM Utilizadores WHERE email = :email');
         $stmt->bindParam(':email', $email);
@@ -462,35 +472,37 @@ class UserController
         exit;
     }
 
-    public static function forgotPassword() {
-        if(isset($_POST['email'])) {
+    public static function forgotPassword()
+    {
+        if (isset($_POST['email'])) {
 
             $email = $_POST['email'];
 
             $user = self::getByEmail($email);
 
-            if($user === null) {
-                SessionController::setFlashMessage('resetPassword', 'Não encontramos nenhum usuário com esse email.');
+            if ($user === null) {
+                SessionController::setFlashMessage('resetPassword', 'Non abbiamo trovato nessun utente con questa e-mail.');
                 header('Location: ' . '/user/forgot-password');
                 exit();
             }
 
             $resetToken = bin2hex(random_bytes(50));
 
-            self::updateUserResetToken($user,$resetToken);
+            self::updateUserResetToken($user, $resetToken);
 
             $resetLink = 'https://liga-padel.pt/user/redefine-password?token=' . $resetToken;
             $mailer = new MailerController();
             $mailer->sendPasswordResetEmail($email, $resetLink);
 
-            SessionController::setFlashMessage('success', 'Enviamos um email com um link de redefinição de senha.');
+            SessionController::setFlashMessage('success', 'Abbiamo inviato una e-mail con un link per reimpostare la password.');
             header('Location: /login');
             exit;
         }
         require_once BASE_PATH . 'views/user/forgot_password.php';
     }
 
-    public static function updateUserResetToken($user, $resetToken){
+    public static function updateUserResetToken($user, $resetToken)
+    {
         $resetExpires = date('Y-m-d H:i:s', time() + 3600); // expires in 1 hour
 
         $conn = dbConnect();
@@ -501,23 +513,24 @@ class UserController
         $stmt->execute();
     }
 
-    public static function redefinePassword() {
-        if(isset($_POST['password'])) {
+    public static function redefinePassword()
+    {
+        if (isset($_POST['password'])) {
 
-        $newPassword = password_hash($_POST['password'], PASSWORD_DEFAULT);
+            $newPassword = password_hash($_POST['password'], PASSWORD_DEFAULT);
 
-        $conn = dbConnect();
-        $stmt = $conn->prepare('UPDATE Utilizadores SET password_hash = :new_password, passwordResetToken = NULL, passwordResetExpires = NULL WHERE email = :email');
-        $stmt->bindParam(':new_password', $newPassword);
-        $stmt->bindParam(':email', $_SESSION['resetEmail']);
-        $stmt->execute();
+            $conn = dbConnect();
+            $stmt = $conn->prepare('UPDATE Utilizadores SET password_hash = :new_password, passwordResetToken = NULL, passwordResetExpires = NULL WHERE email = :email');
+            $stmt->bindParam(':new_password', $newPassword);
+            $stmt->bindParam(':email', $_SESSION['resetEmail']);
+            $stmt->execute();
 
-        unset($_SESSION['resetEmail']);
-        SessionController::setFlashMessage('resetPassword', 'A sua senha foi atualizada com sucesso.');
-        header('Location: /login');
-        exit();
+            unset($_SESSION['resetEmail']);
+            SessionController::setFlashMessage('resetPassword', 'La tua password è stata aggiornata con successo.');
+            header('Location: /login');
+            exit();
 
-        }elseif(isset($_GET['token'])) {
+        } elseif (isset($_GET['token'])) {
             $token = $_GET['token'];
 
             $conn = dbConnect();
@@ -528,23 +541,24 @@ class UserController
 
             // Verify is token is valid
             if ($user === false || $user['passwordResetExpires'] < date('Y-m-d H:i:s')) {
-                SessionController::setFlashMessage('error', 'O token é inválido ou expirou.');
+                SessionController::setFlashMessage('error', 'Il token non è valido o è scaduto.');
                 header('Location: /error');
                 exit();
             }
 
             $_SESSION['resetEmail'] = $user['email'];
-            SessionController::setFlashMessage('changePassword', 'Por favor introduz uma nova senha');
+            SessionController::setFlashMessage('changePassword', 'Inserisci una nuova password');
             require_once BASE_PATH . 'views/user/redefine_password.php';
 
         } else {
-            SessionController::setFlashMessage('error', 'Endereço Inválido');
+            SessionController::setFlashMessage('error', 'Indirizzo non valido');
             header('Location /error');
             exit();
         }
     }
 
-    public static function getEmailFromInvite() {
+    public static function getEmailFromInvite()
+    {
         if (!isset($_SESSION['invite_code'])) {
             return null;
         }
@@ -567,7 +581,8 @@ class UserController
         }
     }
 
-    public static function getLastestMembers() {
+    public static function getLastestMembers()
+    {
         $conn = dbConnect();
         $stmt = $conn->prepare('SELECT id, nome_utilizador, avatar FROM Utilizadores ORDER BY id DESC LIMIT 3');
         $stmt->execute();

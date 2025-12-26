@@ -1,6 +1,6 @@
 </div>
 <footer class="bg-white p-6 text-center">
-    <p class="text-gray-800">&copy; 2023 Liga-Padel. Todos os direitos reservados.</p>
+    <p class="text-gray-800">&copy; 2023 Liga-Padel. Tutti i diritti riservati.</p>
 </footer>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -45,16 +45,16 @@
     }
 
     function updateScore(scoreId, value, buttonClass) {
-        // Atualiza o valor da pontuação
+        // Aggiorna il valore del punteggio
         document.getElementById(scoreId).value = value;
 
-        // Obtem todos os botões da equipa
+        // Ottiene tutti i bottoni della squadra
         var buttons = document.getElementsByClassName(buttonClass);
 
-        // Percorre todos os botões da equipa
+        // Percorre tutti i bottoni della squadra
         for (var i = 0; i < buttons.length; i++) {
-            // Se o botão é o que foi clicado, adiciona a classe 'bg-indigo-600' para o marcar
-            // Caso contrário, remove a classe 'bg-indigo-600' para desmarcar os outros botões
+            // Se il bottone è quello cliccato, aggiunge la classe 'bg-indigo-600' per marcarlo
+            // Altrimenti, rimuove la classe per desmarcare gli altri
             if (buttons[i].innerHTML == value) {
                 buttons[i].classList.add('bg-indigo-600');
             } else {
@@ -67,4 +67,5 @@
 </script>
 
 </body>
+
 </html>

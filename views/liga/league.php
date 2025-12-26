@@ -29,15 +29,17 @@ extract($joinRequests);
                         <!-- Informações do criador da Liga -->
                         <div class="flex items-center space-x-4 mt-2">
                             <img class="w-12 h-12 rounded-full" src="<?= $leagueDetails['avatar'] ?>"
-                                 alt="<?= $leagueDetails['nome_utilizador'] ?>'s avatar">
+                                alt="<?= $leagueDetails['nome_utilizador'] ?>'s avatar">
                             <div class="text-sm text-gray-600">
-                                Organizada por: <span class="font-medium"><?= $leagueDetails['nome_utilizador'] ?></span>
+                                Organizzata da: <span
+                                    class="font-medium"><?= $leagueDetails['nome_utilizador'] ?></span>
                             </div>
                         </div>
 
                         <!-- Data de criação -->
                         <div class="text-sm text-gray-500 mt-2">
-                            Criada em: <?= htmlspecialchars((new DateTime($leagueDetails['data_criacao']))->format("d/m/Y")) ?>
+                            Creata il:
+                            <?= htmlspecialchars((new DateTime($leagueDetails['data_criacao']))->format("d/m/Y")) ?>
                         </div>
 
                         <!-- Descrição da Liga -->
@@ -49,85 +51,85 @@ extract($joinRequests);
                 </div>
 
                 <!-- Create Game and Invite Code -->
-                <?php if($isVisitor): ?>
+                <?php if ($isVisitor): ?>
                     <div class="bg-white shadow-md rounded-lg overflow-hidden p-6 md:col-span-1 space-y-3">
-                        <h2 class="text-2xl font-bold text-center mb-4">Visitante</h2>
-                        <p class="text-sm font-medium text-gray-700 text-center">A ver esta liga como visitante.</p>
+                        <h2 class="text-2xl font-bold text-center mb-4">Visitatore</h2>
+                        <p class="text-sm font-medium text-gray-700 text-center">Stai visualizzando questa lega come
+                            visitatore.</p>
                         <div class="flex justify-center">
-                            <a class="unsubscribe-button inline-block mt-4 rounded-md bg-green-600 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-600" href="/league/request?liga=<?= $leagueDetails['id'] ?>">Enviar Pedido</a>
+                            <a class="unsubscribe-button inline-block mt-4 rounded-md bg-green-600 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-600"
+                                href="/league/request?liga=<?= $leagueDetails['id'] ?>">Invia Richiesta</a>
                         </div>
                     </div>
                 <?php endif; ?>
 
-                <?php if(!$isVisitor): ?>
-                <div class="bg-white shadow-md rounded-lg overflow-hidden p-4 md:col-span-1">
-                    <?php if ($message = SessionController::getFlash('league_settings_success')): ?>
-                        <div class="text-green-500 mt-2 text-sm">
-                            <?php echo $message; ?>
-                        </div>
-                    <?php endif; ?>
-                    <h2 class="text-2xl font-bold mb-2">Gestão</h2>
-                    <div class="overflow-y-auto max-h-[300px]">
-                        <a href="/game/create?league_id=<?php echo $_GET['id']; ?>"
-                           class="mb-4 inline-block px-6 py-2 text-xs font-medium leading-6 text-center text-white uppercase transition bg-indigo-600 rounded shadow ripple hover:shadow-lg hover:bg-indigo-800 focus:outline-none">
-                            Criar Jogo
-                        </a>
-
-                        <?php if ($_SESSION['user']['id'] == $leagueDetails['id_criador']): ?>
-                            <a href="/league/settings?id=<?php echo $_GET['id']; ?>"
-                               class="mb-4 inline-block px-6 py-2 text-xs font-medium leading-6 text-center text-white uppercase transition bg-orange-600 rounded shadow ripple hover:shadow-lg hover:bg-orange-800 focus:outline-none">
-                                Definições
-                            </a>
-                        <?php endif; ?>
-
-                        <?php if ($_SESSION['user']['id'] != $leagueDetails['id_criador']): ?>
-                            <button
-                                    id="triggerModal"
-                                    class="mb-4 inline-block px-6 py-2 text-xs font-medium leading-6 text-center text-white uppercase transition bg-red-600 rounded shadow ripple hover:shadow-lg hover:bg-red-800 focus:outline-none"
-                            >
-                                Deixar Liga
-                            </button>
-                            <input type="hidden" id="hiddenLeagueId" value="<?= $leagueDetails['id'] ?>">
-                        <?php endif; ?>
-
-
-                        <div class="mt-2">
-                            <label for="invite-code" class="block text-sm font-medium text-gray-700">Código de
-                                convite</label>
-                            <input type="text" name="invite-code" id="invite-code"
-                                   class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                                   value="<?php echo $inviteCode['codigo_convite']; ?>" readonly>
-                        </div>
-
-                        <div class="mt-2">
-                            <form method="post">
-                                <label for="email" class="block text-sm font-medium text-gray-700">Convidar por
-                                    E-Mail</label>
-                                <input type="text" name="email" id="email"
-                                       class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md">
-                                <button type="submit"
-                                        class="mt-2 inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition duration-150 ease-in-out">
-                                    Enviar Convite
-                                </button>
-                            </form>
-                        </div>
-                        <?php if ($email_errors = SessionController::getFlash('error')): ?>
-                            <div class="text-red-500 mt-2 text-sm">
-                                <?= $email_errors ?>
-                            </div>
-                        <?php endif; ?>
-                        <?php if ($email_success = SessionController::getFlash('success')): ?>
+                <?php if (!$isVisitor): ?>
+                    <div class="bg-white shadow-md rounded-lg overflow-hidden p-4 md:col-span-1">
+                        <?php if ($message = SessionController::getFlash('league_settings_success')): ?>
                             <div class="text-green-500 mt-2 text-sm">
-                                <?= $email_success ?>
+                                <?php echo $message; ?>
                             </div>
                         <?php endif; ?>
+                        <h2 class="text-2xl font-bold mb-2">Gestione</h2>
+                        <div class="overflow-y-auto max-h-[300px]">
+                            <a href="/game/create?league_id=<?php echo $_GET['id']; ?>"
+                                class="mb-4 inline-block px-6 py-2 text-xs font-medium leading-6 text-center text-white uppercase transition bg-indigo-600 rounded shadow ripple hover:shadow-lg hover:bg-indigo-800 focus:outline-none">
+                                Crea Partita
+                            </a>
+
+                            <?php if ($_SESSION['user']['id'] == $leagueDetails['id_criador']): ?>
+                                <a href="/league/settings?id=<?php echo $_GET['id']; ?>"
+                                    class="mb-4 inline-block px-6 py-2 text-xs font-medium leading-6 text-center text-white uppercase transition bg-orange-600 rounded shadow ripple hover:shadow-lg hover:bg-orange-800 focus:outline-none">
+                                    Impostazioni
+                                </a>
+                            <?php endif; ?>
+
+                            <?php if ($_SESSION['user']['id'] != $leagueDetails['id_criador']): ?>
+                                <button id="triggerModal"
+                                    class="mb-4 inline-block px-6 py-2 text-xs font-medium leading-6 text-center text-white uppercase transition bg-red-600 rounded shadow ripple hover:shadow-lg hover:bg-red-800 focus:outline-none">
+                                    Lascia Lega
+                                </button>
+                                <input type="hidden" id="hiddenLeagueId" value="<?= $leagueDetails['id'] ?>">
+                            <?php endif; ?>
+
+
+                            <div class="mt-2">
+                                <label for="invite-code" class="block text-sm font-medium text-gray-700">Codice di
+                                    invito</label>
+                                <input type="text" name="invite-code" id="invite-code"
+                                    class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                                    value="<?php echo $inviteCode['codigo_convite']; ?>" readonly>
+                            </div>
+
+                            <div class="mt-2">
+                                <form method="post">
+                                    <label for="email" class="block text-sm font-medium text-gray-700">Invita tramite
+                                        E-Mail</label>
+                                    <input type="text" name="email" id="email"
+                                        class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                                    <button type="submit"
+                                        class="mt-2 inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition duration-150 ease-in-out">
+                                        Invia Invito
+                                    </button>
+                                </form>
+                            </div>
+                            <?php if ($email_errors = SessionController::getFlash('error')): ?>
+                                <div class="text-red-500 mt-2 text-sm">
+                                    <?= $email_errors ?>
+                                </div>
+                            <?php endif; ?>
+                            <?php if ($email_success = SessionController::getFlash('success')): ?>
+                                <div class="text-green-500 mt-2 text-sm">
+                                    <?= $email_success ?>
+                                </div>
+                            <?php endif; ?>
+                        </div>
                     </div>
-                </div>
                 <?php endif; ?>
 
                 <!-- Last 5 Matches -->
                 <div class="h-[300px] md:col-span-2 bg-white p-4 rounded-lg shadow-md overflow-y-auto">
-                    <h2 class="text-2xl font-bold mb-2">Ultimos Jogos Terminados</h2>
+                    <h2 class="text-2xl font-bold mb-2">Ultime Partite Terminate</h2>
 
                     <?php foreach ($lastFiveGames as $game): ?>
                         <!--Game Card-->
@@ -150,9 +152,7 @@ extract($joinRequests);
                                         <div class="w-2/5 p-2 bg-white rounded shadow">
                                             <?php foreach ($team1 as $player): ?>
                                                 <div class="flex items-center">
-                                                    <img class="h-8 w-8 rounded-full mr-2"
-                                                         src="<?= $player['avatar'] ?>"
-                                                         alt="Avatar de
+                                                    <img class="h-8 w-8 rounded-full mr-2" src="<?= $player['avatar'] ?>" alt="Avatar de
                                                         <?= htmlspecialchars($player['nome_utilizador']) ?>">
                                                     <span><?= htmlspecialchars($player['nome_utilizador']) ?></span>
                                                 </div>
@@ -161,16 +161,15 @@ extract($joinRequests);
 
                                         <!--Score-->
                                         <div class="mx-2">
-                                            <span class="text-xl"><?= $game['team1_score'] ?> - <?= $game['team2_score'] ?></span>
+                                            <span class="text-xl"><?= $game['team1_score'] ?> -
+                                                <?= $game['team2_score'] ?></span>
                                         </div>
 
                                         <!--Team 2-->
                                         <div class="w-2/5 p-2 bg-white rounded shadow">
                                             <?php foreach ($team2 as $player): ?>
                                                 <div class="flex items-center">
-                                                    <img class="h-8 w-8 rounded-full mr-2"
-                                                         src="<?= $player['avatar'] ?>"
-                                                         alt="Avatar de
+                                                    <img class="h-8 w-8 rounded-full mr-2" src="<?= $player['avatar'] ?>" alt="Avatar de
                                                          <?= htmlspecialchars($player['nome_utilizador']) ?>">
                                                     <span><?= htmlspecialchars($player['nome_utilizador']) ?></span>
                                                 </div>
@@ -178,7 +177,7 @@ extract($joinRequests);
                                         </div>
                                         <?php
                                     } else {
-                                        echo "<p>Sem jogadores.</p>";
+                                        echo "<p>Nessun giocatore.</p>";
                                     }
                                     ?>
                                 </div>
@@ -193,16 +192,16 @@ extract($joinRequests);
             <?php require BASE_PATH . '/views/partials/ongoing_games.php'; ?>
             <?php require BASE_PATH . '/views/partials/league_members.php'; ?>
 
-            <?php if($_SESSION['user']['id'] == $leagueDetails['id_criador']): ?>
-            <div class="h-[300px] md:col-span-2 bg-white p-4 rounded-lg shadow-md overflow-y-auto">
-                <h2 class="text-2xl font-bold mb-2">Pedidos para se Juntar</h2>
+            <?php if ($_SESSION['user']['id'] == $leagueDetails['id_criador']): ?>
+                <div class="h-[300px] md:col-span-2 bg-white p-4 rounded-lg shadow-md overflow-y-auto">
+                    <h2 class="text-2xl font-bold mb-2">Richieste di Adesione</h2>
 
-                <?php if (count($joinRequests) == 0): ?>
-                    <p>Não existem pedidos para se juntar à liga.</p>
-                <?php else: ?>
-                <?php require BASE_PATH . '/views/partials/join_requests.php'; ?>
-                <?php endif; ?>
-            </div>
+                    <?php if (count($joinRequests) == 0): ?>
+                        <p>Non ci sono richieste di adesione per questa lega.</p>
+                    <?php else: ?>
+                        <?php require BASE_PATH . '/views/partials/join_requests.php'; ?>
+                    <?php endif; ?>
+                </div>
             <?php endif; ?>
         </div>
 
@@ -212,10 +211,11 @@ extract($joinRequests);
 
     <div id="confirmationModal" class="fixed inset-0 flex items-center justify-center z-50 invisible">
         <div class="modal-content bg-white p-6 rounded shadow-lg w-1/3">
-            <p class="mb-4">Tem certeza de que deseja deixar a liga?</p>
+            <p class="mb-4">Sei sicuro di voler lasciare la lega?</p>
             <div class="flex justify-end">
-                <button id="confirmLeave" class="bg-red-600 text-white px-4 py-2 rounded mr-2 hover:bg-red-700">Sim, deixar</button>
-                <button id="cancelLeave" class="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400">Cancelar</button>
+                <button id="confirmLeave" class="bg-red-600 text-white px-4 py-2 rounded mr-2 hover:bg-red-700">Sì,
+                    lascia</button>
+                <button id="cancelLeave" class="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400">Annulla</button>
             </div>
         </div>
     </div>
@@ -224,7 +224,7 @@ extract($joinRequests);
         <input type="hidden" name="league_id" value="<?= $leagueDetails['id'] ?>">
     </form>
 
-        <script>
+    <script>
         document.addEventListener('DOMContentLoaded', (event) => {
             const modal = document.getElementById('confirmationModal');
             const confirmButton = document.getElementById('confirmLeave');
@@ -232,19 +232,19 @@ extract($joinRequests);
             const leaveLeagueForm = document.getElementById('leaveLeagueForm');
             const triggerModalButton = document.getElementById('triggerModal');
 
-            triggerModalButton.addEventListener('click', function(e) {
+            triggerModalButton.addEventListener('click', function (e) {
                 e.preventDefault();
                 modal.classList.remove('invisible');
             });
 
             // Quando o botão confirmar no modal for clicado, envia o formulário.
-            confirmButton.addEventListener('click', function() {
+            confirmButton.addEventListener('click', function () {
                 modal.classList.add('invisible');
                 leaveLeagueForm.submit();
             });
 
             // Quando o botão cancelar no modal for clicado, apenas fecha o modal.
-            cancelButton.addEventListener('click', function() {
+            cancelButton.addEventListener('click', function () {
                 modal.classList.add('invisible');
             });
         });
@@ -252,4 +252,4 @@ extract($joinRequests);
 
 
     </script>
-        <?php require BASE_PATH . "/views/partials/footer.php"; ?>
+    <?php require BASE_PATH . "/views/partials/footer.php"; ?>

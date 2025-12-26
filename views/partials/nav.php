@@ -20,22 +20,22 @@
 
                                 <a href="/league/join"
                                    class="<?= uriIs('/league/join') ? 'bg-gray-900 text-white rounded-md text-xs px-2 py-1 sm:text-sm sm:px-3 sm:py-2" aria-current="page"' : 'text-gray-300 hover:bg-gray-700 hover:text-white rounded-md text-xs px-2 py-1 sm:text-sm sm:px-3 sm:py-2' ?>">
-                                    <span class="flex items-center">Juntar a Liga</span>
+                                    <span class="flex items-center">Entra in una Lega</span>
                                 </a>
 
                             <a href="/league/public"
                                class="<?= uriIs('/league/public') ? 'bg-gray-900 text-white rounded-md text-xs px-2 py-1 sm:text-sm sm:px-3 sm:py-2" aria-current="page"' : 'text-gray-300 hover:bg-gray-700 hover:text-white rounded-md text-xs px-2 py-1 sm:text-sm sm:px-3 sm:py-2' ?>">
-                                <span class="flex items-center">Ligas Públicas</span>
+                                <span class="flex items-center">Leghe Pubbliche</span>
                             </a>
 
                             <?php else: ?>
                                 <a href="/register"
                                    class="<?= uriIs('/register') ? 'bg-gray-900 text-white rounded-md px-3 py-2 text-sm font-medium" aria-current="page"' : 'text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium' ?>">
-                                    <span class="flex items-center">Registrar</span>
+                                    <span class="flex items-center">Registrati</span>
                                 </a>
                                 <a href="/login"
                                    class="<?= uriIs('/login') ? 'bg-gray-900 text-white rounded-md px-3 py-2 text-sm font-medium" aria-current="page"' : 'text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium' ?>">
-                                    <span class="flex items-center">Login</span>
+                                    <span class="flex items-center">Accedi</span>
                                 </a>
                             <?php endif ?>
                         </div>
@@ -53,7 +53,7 @@
                                         class="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
                                         id="notification-button"
                                 >
-                                    <span class="sr-only">View notifications</span>
+                                    <span class="sr-only">Visualizza notifiche</span>
                                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                          stroke="currentColor" aria-hidden="true">
                                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -76,7 +76,7 @@
                                                    role="menuitem"><?= htmlspecialchars($notification['content']) ?></a>
                                             <?php endforeach; ?>
                                         <?php else: ?>
-                                            <div class="px-4 py-2 text-sm text-gray-500">Sem notificações</div>
+                                            <div class="px-4 py-2 text-sm text-gray-500">Nessuna notifica</div>
                                         <?php endif; ?>
                                     </div>
                                 </div>
@@ -96,9 +96,9 @@
                                      class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none hidden"
                                 >
                                     <a href="/profile?id=<?= $_SESSION['user']['id']; ?>"
-                                       class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200">Perfil</a>
-                                    <a href="/settings" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200">Definições</a>
-                                    <a href="/logout" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200">Sair</a>
+                                       class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200">Profilo</a>
+                                    <a href="/settings" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200">Impostazioni</a>
+                                    <a href="/logout" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200">Esci</a>
                                 </div>
                             </div>
                         <?php endif; ?>

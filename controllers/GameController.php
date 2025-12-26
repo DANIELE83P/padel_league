@@ -9,7 +9,7 @@ class GameController
     public static function schedule()
     {
         if (!isLoggedIn()) {
-            SessionController::setFlashMessage('login', 'Tens de estar ligado para ver esta página');
+            SessionController::setFlashMessage('login', 'Devi essere connesso per visualizzare questa pagina');
             header('Location: /login');
             exit;
         }
@@ -38,7 +38,7 @@ class GameController
             $league_id = $_GET['league_id'];
             require_once "../views/jogo/create.php";
         } else {
-            SessionController::setFlashMessage('error', 'Link Inválido.');
+            SessionController::setFlashMessage('error', 'Link non valido.');
             header('Location: /error');
         }
     }
@@ -59,13 +59,13 @@ class GameController
     public static function validateUserInput($user_id, $league_id)
     {
         if (!isLoggedIn()) {
-            SessionController::setFlashMessage('login', 'Tens de estar ligado para ver esta página');
+            SessionController::setFlashMessage('login', 'Devi essere connesso per visualizzare questa pagina');
             header('Location: /login');
             exit;
         }
 
         if (!LeagueController::isUserMemberOfLeague($user_id, $league_id)) {
-            SessionController::setFlashMessage('access_error', 'Não és um membro desta liga.');
+            SessionController::setFlashMessage('access_error', 'Non sei membro di questa lega.');
             header('Location: /error');
             exit();
         }
@@ -90,7 +90,7 @@ class GameController
             return $user_in_league != $user_id;
         });
 
-        $content = $_SESSION['user']['nome_utilizador'] . " criou um novo jogo na liga " . $league_name['nome'] . ". Vêm participar!";
+        $content = $_SESSION['user']['nome_utilizador'] . " ha creato una nuova partita nella lega " . $league_name['nome'] . ". Vieni a partecipare!";
         $link = "/game?id=" . $game_id;
 
         NotificationController::notifyUsers($users, $content, $link);
@@ -108,12 +108,12 @@ class GameController
         $isVisitor = false;
 
 
-      //  self::validateUserInput($currentUserId, $league_id);
+        //  self::validateUserInput($currentUserId, $league_id);
 
         $membership = LeagueController::checkLeagueMembership($game['id_liga'], $currentUserId);
         $league_type = LeagueController::getLeagueType($league_id);
 
-        if($league_type == 'publica' && !$membership) {
+        if ($league_type == 'publica' && !$membership) {
             $isVisitor = true;
         }
 
@@ -124,8 +124,8 @@ class GameController
             $resultsExist = self::resultsExist($game_id);
             $canRegisterResults = self::canRegisterResults($players);
             require_once '../views/jogo/show.php';
-        } elseif($league_type == 'privada' && !$membership) {
-            SessionController::setFlashMessage('error', 'Esta Liga é Privada.');
+        } elseif ($league_type == 'privada' && !$membership) {
+            SessionController::setFlashMessage('error', 'Questa lega è privata.');
             header('Location: /error');
         }
     }
@@ -171,7 +171,7 @@ class GameController
     public static function getPlayerIdsInGame($game_id)
     {
         $conn = dbConnect();
-        $game_id_int = (int)$game_id;
+        $game_id_int = (int) $game_id;
 
         $stmt = $conn->prepare('SELECT Utilizadores.id FROM Jogadores_Jogo 
                         JOIN Utilizadores ON Jogadores_Jogo.id_utilizador = Utilizadores.id 
@@ -188,7 +188,7 @@ class GameController
     public static function subscribe()
     {
         if (!isLoggedIn()) {
-            SessionController::setFlashMessage('login', 'Faz Login para ver esta página');
+            SessionController::setFlashMessage('login', 'Accedi per visualizzare questa pagina');
             header('Location: /login');
             exit;
         }
@@ -210,12 +210,12 @@ class GameController
     public static function unsubscribe()
     {
         if (!isLoggedIn()) {
-            SessionController::setFlashMessage('login', 'Faz Login para ver esta página');
+            SessionController::setFlashMessage('login', 'Accedi per visualizzare questa pagina');
             header('Location: /login');
             exit;
         }
         if (!isset($_GET['id'])) {
-            SessionController::setFlashMessage('error', 'Endereço Inválido.');
+            SessionController::setFlashMessage('error', 'Indirizzo non valido.');
             header('Location: /error');
             exit;
         }
@@ -255,7 +255,7 @@ class GameController
     public static function handleLockGame()
     {
         if (!isset($_GET['game_id'])) {
-            SessionController::setFlashMessage('error', 'Endereço Inválido.');
+            SessionController::setFlashMessage('error', 'Indirizzo non valido.');
             header('Location: /error');
             exit;
         }
@@ -284,7 +284,7 @@ class GameController
 
 
         if (!$game) {
-            return 'O jogo não existe ou está fechado.';
+            return 'La partita non esiste o è chiusa.';
         }
 
         // Fetch subscribed players and rankings
@@ -292,7 +292,7 @@ class GameController
 
         // check if it's 4 players
         if (count($players) !== MAX_PLAYERS) {
-            return 'Não estão 4 jogadores inscritos';
+            return 'Non ci sono 4 giocatori iscritti';
         }
 
         // Assign the players to teams
@@ -338,10 +338,10 @@ class GameController
         $result = self::changeTeams($game_id, $new_teams);
         if ($result === true) {
             unset($_SESSION['adjustTeams']);
-            SessionController::setFlashMessage('success', 'Equipas Alteradas');
+            SessionController::setFlashMessage('success', 'Squadre modificate');
             header("Location: /game?id=$game_id");
         } else {
-            SessionController::setFlashMessage('error', 'Algo correu mal, tenta de novo.');
+            SessionController::setFlashMessage('error', 'Qualcosa è andato storto, riprova.');
             header('Location /error');
         }
     }
@@ -360,7 +360,7 @@ class GameController
         $game = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (!$game) {
-            return 'O jogo não existe ou não está trancado.';
+            return 'La partita non esiste o non è bloccata.';
         }
 
         // Atualize as equipes dos jogadores
@@ -376,7 +376,8 @@ class GameController
 
         return true;
     }
-    public static function getLastUserGameDate($user_id){
+    public static function getLastUserGameDate($user_id)
+    {
         $conn = dbConnect();
         $stmt = $conn->prepare('SELECT MAX(Jogos.data_hora) as last_game_date 
                             FROM Jogos 
@@ -388,14 +389,15 @@ class GameController
         return $result['last_game_date'];
     }
 
-    public static function getPlayerGames($user_id) {
+    public static function getPlayerGames($user_id)
+    {
         $conn = dbConnect();
         $stmt = $conn->prepare('SELECT Jogos.id, Jogos.local, Jogos.data_hora, Jogos.team1_score, Jogos.team2_score, Jogos.fim_jogo,
                             Jogadores_Jogo.equipa, Jogadores_Jogo.pontuacao, 
                             CASE 
-                                WHEN Jogadores_Jogo.equipa = 1 AND Jogos.team1_score > Jogos.team2_score THEN "Vitória"
-                                WHEN Jogadores_Jogo.equipa = 2 AND Jogos.team1_score < Jogos.team2_score THEN "Vitória"
-                                ELSE "Derrota"
+                                WHEN Jogadores_Jogo.equipa = 1 AND Jogos.team1_score > Jogos.team2_score THEN "Vittoria"
+                                WHEN Jogadores_Jogo.equipa = 2 AND Jogos.team1_score < Jogos.team2_score THEN "Vittoria"
+                                ELSE "Sconfitta"
                             END as Resultado
                             FROM Jogos 
                             INNER JOIN Jogadores_Jogo ON Jogos.id = Jogadores_Jogo.id_jogo 
@@ -452,8 +454,8 @@ class GameController
             $team1_score = $_POST['team1_score'];
             $team2_score = $_POST['team2_score'];
 
-            if($team1_score == $team2_score) {
-                SessionController::setFlashMessage('error', 'Não é permitido empates.');
+            if ($team1_score == $team2_score) {
+                SessionController::setFlashMessage('error', 'Non sono permessi pareggi.');
                 include(BASE_PATH . 'views/jogo/register_results.php');
                 exit();
             }
@@ -505,7 +507,7 @@ class GameController
     public static function finishGame()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            SessionController::setFlashMessage('error', 'Endereço Inválido.');
+            SessionController::setFlashMessage('error', 'Indirizzo non valido.');
             header('Location: /error');
             exit;
         }
@@ -518,13 +520,13 @@ class GameController
         $game = self::getGame($game_id);
 
         if (!$game) {
-            SessionController::setFlashMessage('error', 'O jogo não existe!');
+            SessionController::setFlashMessage('error', 'La partita non esiste!');
             header('Location: /game?id=' . $game_id);
             exit;
         }
 
         if ($game['status'] != GAME_LOCKED) {
-            SessionController::setFlashMessage('error', 'O jogo já terminou!');
+            SessionController::setFlashMessage('error', 'La partita è già terminata!');
             header('Location: /game?id=' . $game_id);
             exit;
         }
@@ -625,7 +627,8 @@ class GameController
     }
 
 
-    public static function getTotalGames() {
+    public static function getTotalGames()
+    {
         $conn = dbConnect();
         $stmt = $conn->prepare("SELECT COUNT(*) as total FROM Jogos");
         $stmt->execute();
@@ -633,7 +636,8 @@ class GameController
         return $result['total'];
     }
 
-    public static function cancelGame() {
+    public static function cancelGame()
+    {
 
         $gameId = $_POST['game_id'];
         $leagueId = $_POST['league_id'];
@@ -648,7 +652,7 @@ class GameController
         $stmt2->bindParam(':game_id', $gameId);
         $stmt2->execute();
 
-        SessionController::setFlashMessage('success', 'Jogo cancelado com sucesso.');
+        SessionController::setFlashMessage('success', 'Partita cancellata con successo.');
         header("Location: /league?id=$leagueId");
     }
 }
